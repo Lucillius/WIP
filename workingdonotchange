@@ -1,0 +1,23 @@
+#steps we need for complete all in one
+#automatically trace jpg file
+#convert jpg to swc via neuronstudio
+#use swc in neutube and imagej
+#calculate length of px in imagej
+#calculate format in swc
+#find what swc columns mean when spat out from neurostudio
+#Importing modules
+import cv2
+#We need a way to find batch processing of multiple jpgs
+#Declaring the original image to be used
+originalImage = cv2.imread("C:\\Users\\Tommy\\Desktop\\test.jpg")
+#Grayscaling the image
+grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+#Turning the grayscale image into black and white
+(thresh, im_bw) = cv2.threshold(grayImage, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+#Combining images
+im_bw_color = cv2.cvtColor(im_bw, cv2.COLOR_GRAY2BGR)
+combinedImage = cv2.add(im_bw_color, originalImage)
+#Displaying all images
+cv2.imshow("combinedimage", combinedImage)
+#Prevents image windows from closing immediately
+cv2.waitKey(0)
