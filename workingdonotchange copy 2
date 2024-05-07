@@ -1,0 +1,58 @@
+#this is for an entire folder
+#this is a proof of concept, not the final version, we need to make sure everything works
+#steps we need for complete all in one
+#automatically trace jpg file - complete
+#convert jpg to swc via neuronstudio - can't read tif files
+#use swc in neutube and imagej
+#calculate length of px in imagej
+#calculate format in swc
+#find what swc columns mean when spat out from neurostudio
+#Importing modules
+from os import listdir
+from os.path import isfile, join
+import cv2
+import os
+from PIL import Image
+import tkinter as tk
+from tkinter import filedialog
+import tifffile as tif
+import numpy as np
+#from load_images_from_folder import load_images_from_folder
+#from fileselector import select_file
+
+#from load_images_from_folder import load_images_from_folder
+#We need a way to find batch processing of multiple jpgs
+#able to open and read a folder of jpgs
+#need to be able to save folder of jpgs as tifs - see load_images_from_folder
+#Declaring the original image to be used
+#load_images_from_folder(r"C:\Users\Tommy\Desktop\School Files\477GFP;S6kSTDETE x G477GFP jpegs")
+root = tk.Tk()
+root.withdraw()
+file_path = filedialog.askdirectory()
+originalFileName = os.path.splitext(file_path)[0]
+#image = tif.imread(file_path)
+originalImage = cv2.imread(file_path)
+#Grayscaling the image
+grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
+#Turning the grayscale image into black and white
+(thresh, im_bw) = cv2.threshold(grayImage, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+#Combining images
+im_bw_color = cv2.cvtColor(im_bw, cv2.COLOR_GRAY2BGR)
+combinedImage = cv2.add(im_bw_color, originalImage)
+#identifying filetype to save as as a variable
+fileName = originalFileName + ".tif"
+print(fileName)
+#define path to create new folder
+newPath = r"C:\Users\Tommy\Desktop\WIP"
+#makes a new path if the newPath variable string does not exist and verifies
+if not os.path.exists(newPath):
+    os.makedirs(newPath)
+    print(newPath, "created!")
+else:
+    print(newPath, "already exists")
+#save variable as image named test as a tiff file and use combinedImage as a variable
+cv2.imwrite(os.path.join(newPath, fileName), combinedImage)
+#Displaying all images
+cv2.imshow("combinedimage", combinedImage)
+#Prevents image windows from closing immediately
+cv2.waitKey(0)

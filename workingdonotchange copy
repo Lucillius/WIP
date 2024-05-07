@@ -1,3 +1,4 @@
+#this is for a single file
 #this is a proof of concept, not the final version, we need to make sure everything works
 #steps we need for complete all in one
 #automatically trace jpg file - complete
@@ -14,7 +15,8 @@ import os
 from PIL import Image
 import tkinter as tk
 from tkinter import filedialog
-#import tifffile as tif
+import tifffile as tif
+import numpy as np
 #from load_images_from_folder import load_images_from_folder
 #from fileselector import select_file
 
@@ -27,28 +29,37 @@ from tkinter import filedialog
 root = tk.Tk()
 root.withdraw()
 file_path = filedialog.askopenfilename()
-
-originalImage = cv2.imread("C:\\Users\\Tommy\\Desktop\\test.jpg")
+originalFileName = os.path.splitext(file_path)[0]
+#image = tif.imread(file_path)
+originalImage = cv2.imread(file_path)
 #Grayscaling the image
 grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
 #Turning the grayscale image into black and white
 (thresh, im_bw) = cv2.threshold(grayImage, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 #Combining images
 im_bw_color = cv2.cvtColor(im_bw, cv2.COLOR_GRAY2BGR)
-combinedImage = cv2.add(im_bw_color, originalImage)
-#identifying filetype to save as as a variable
-fileName = "test.tif"
-#define path to create new folder
-newPath = r"C:\Users\Tommy\Desktop\New"
-#makes a new path if the newPath variable string does not exist and verifies
-if not os.path.exists(newPath):
-    os.makedirs(newPath)
-    print(newPath, "created!")
-else:
-    print(newPath, "already exists")
-#save variable as image named test as a tiff file and use combinedImage as a variable
-cv2.imwrite(os.path.join(newPath, fileName), combinedImage)
 #Displaying all images
+combinedImage = cv2.add(im_bw_color, originalImage)
+points = []
+#fix this function
+def click_event(event, x, y, flags, params):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        points.append((x,y))
+        thickness = 9
+        cv2.line(combinedImage, (x,y), 4, (0, 255, 0), thickness)
+        if len(points) >= 2:
+            cv2.line(combinedImage, points[-1], points[-2],
+                     (0, 255, 255), 5)
 cv2.imshow("combinedimage", combinedImage)
+cv2.namedWindow("image")
+cv2.setMouseCallback('image', click_event)
+#identifying filetype to save as as a variable
+fileName = originalFileName + "Cleared" + ".jpg"
+print(fileName + "Created!")
+#define path to create new folder
+savePath = filedialog.askdirectory()
+#makes a new path if the newPath variable string does not exist and verifies
+#save variable as image named test as a tiff file and use combinedImage as a variable
+cv2.imwrite(os.path.join(savePath, fileName), combinedImage)
 #Prevents image windows from closing immediately
 cv2.waitKey(0)
