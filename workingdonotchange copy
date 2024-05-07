@@ -1,3 +1,4 @@
+#this is a proof of concept, not the final version, we need to make sure everything works
 #steps we need for complete all in one
 #automatically trace jpg file - complete
 #convert jpg to swc via neuronstudio - can't read tif files
@@ -11,8 +12,11 @@ from os.path import isfile, join
 import cv2
 import os
 from PIL import Image
-from load_images_from_folder import load_images_from_folder
-from fileselector import select_file
+import tkinter as tk
+from tkinter import filedialog
+#import tifffile as tif
+#from load_images_from_folder import load_images_from_folder
+#from fileselector import select_file
 
 #from load_images_from_folder import load_images_from_folder
 #We need a way to find batch processing of multiple jpgs
@@ -20,6 +24,10 @@ from fileselector import select_file
 #need to be able to save folder of jpgs as tifs - see load_images_from_folder
 #Declaring the original image to be used
 #load_images_from_folder(r"C:\Users\Tommy\Desktop\School Files\477GFP;S6kSTDETE x G477GFP jpegs")
+root = tk.Tk()
+root.withdraw()
+file_path = filedialog.askopenfilename()
+
 originalImage = cv2.imread("C:\\Users\\Tommy\\Desktop\\test.jpg")
 #Grayscaling the image
 grayImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2GRAY)
@@ -30,13 +38,16 @@ im_bw_color = cv2.cvtColor(im_bw, cv2.COLOR_GRAY2BGR)
 combinedImage = cv2.add(im_bw_color, originalImage)
 #identifying filetype to save as as a variable
 fileName = "test.tif"
-#save variable as image named test as a tiff file and use combinedImage as a variable
-cv2.imwrite(fileName, combinedImage)
 #define path to create new folder
 newPath = r"C:\Users\Tommy\Desktop\New"
-#
+#makes a new path if the newPath variable string does not exist and verifies
 if not os.path.exists(newPath):
     os.makedirs(newPath)
+    print(newPath, "created!")
+else:
+    print(newPath, "already exists")
+#save variable as image named test as a tiff file and use combinedImage as a variable
+cv2.imwrite(os.path.join(newPath, fileName), combinedImage)
 #Displaying all images
 cv2.imshow("combinedimage", combinedImage)
 #Prevents image windows from closing immediately
